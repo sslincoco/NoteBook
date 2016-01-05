@@ -18,4 +18,9 @@
 					
 			});
 
+		 //  //为notebooks绑定事件
+			// $(".category_note").on('click',function(){
+			// 	NotebooksCtrl.clickCategory_note(this);
+			// });
+
 })(this,this.document)

@@ -38,7 +38,6 @@
 				$target.val("");
 				$target.hide();
 			}
-
 		};
 
 		NotebooksCtrl.addNotebook= function(title){
@@ -47,7 +46,10 @@
 			$notebooks.find(".category_note").each(function(){
 				$(this).removeClass("selectedNote");
 			});
-			$notebooks.find(".category_note").eq(0).addClass("selectedNote");
+			$notebooks.find(".category_note").eq(0).addClass("selectedNote").on('click',function(){
+				NotebooksCtrl.clickCategory_note(this);
+			});
+
 		};
 
 		NotebooksCtrl.clickCategory_note = function(element){
@@ -56,6 +58,8 @@
 				$(this).removeClass("hoverNote");
 			}); 
 			$(element).addClass("selectedNote");
+
+			//增加渲染
 
 		};
 

@@ -59,6 +59,7 @@ body{
 	font-size: 18px;
 	color: #b2b2b6;
 	line-height: 36px;
+	cursor: pointer;
 }
 .sidebar .input_new_category{
 	display: none;
