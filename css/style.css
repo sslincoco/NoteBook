@@ -1,0 +1,189 @@
+*{margin: 0;padding:0;}
+img{border: none;}
+ul{
+	list-style: none;
+}
+a{
+	text-decoration: none;
+}
+input{outline: none;}
+.btn_pointer{cursor: pointer;}
+body{
+	font-family: Arial;
+	font-size: 14px; 
+	height: 100%;
+}
+.notePage{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	max-width: 1600px;
+	left: 0;
+	top: 0;
+	overflow: hidden;
+}
+.sidebar{
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 200px;
+	height: 100%;
+	background: #181818;
+}
+.side-header{
+	width: 100%;
+	height: 180px;
+	font-size: 3em;
+	line-height: 180px;
+	color: #c2c2c6;
+	text-align: center;
+}
+.side-tools{
+	float: right;
+	margin-bottom: 20px;
+}
+.side-tools span{
+	width: 33px;
+	height: 27px;
+	display: inline-block;
+	margin-right: 15px;
+}
+#notebooks{
+	clear: both;
+	width: 100%;
+}
+#notebooks .category_note{
+	width: calc(100%-30px);
+	height: 36px;
+	padding-left: 30px;
+	font-size: 18px;
+	color: #b2b2b6;
+	line-height: 36px;
+}
+.sidebar .input_new_category{
+	display: none;
+	margin-left: 20px;
+	font-size: 16px;
+	font-weight: bold;
+	height: 28px;
+	width: 160px;
+	color: #c2c2c6;
+	background-color: #181818;
+	/*background-color: #222;*/
+	border: none;
+	border-bottom: 1px dashed #ccc;
+}
+.container{
+	position: absolute;
+	left: 200px;
+	width: calc(100% - 205px);
+	height: 100%;
+	border-left: 5px solid #ddd;
+}
+#container_Info{
+	position: absolute;
+	top: 0;
+	width: 408px;
+	height: 100%;
+	padding-left: 10px;
+	padding-right: 10px;
+	border-right: 8px solid #ddd;
+}
+.container .container-header{
+	position: relative;
+	width: 100%;
+	height: 180px;
+	font-size: 2.8em;
+	line-height: 180px;
+	font-weight: bold;
+	color: #b2b2b6;
+
+}
+.container-header .addNew{
+	position: absolute;
+	top: 40%;
+	right: 0px;
+	display: block;
+	width: 130px;
+	height: 36px;
+	border-radius: 5px;
+	background-color: rgba(129,196,131,.9);
+	font-size: 18px;
+	line-height: 36px;
+	text-align: center;
+	color: #c2c2c6;
+
+}
+.container-header .addNew i{
+	display: inline-block;
+	width: 22px;
+	height: 22px;
+	float: left;
+	margin-top: 8px;
+	margin-right: 8px;
+	font-style: normal;
+	background: url("../images/writeicon.png");
+
+}
+.container-header .addNew a{
+	display: inline-block;
+	color: #eee;
+}
+.content{
+	overflow: auto;
+	height: 100%;
+}
+.content .content-list{
+	width: 100%;
+}
+.content-list .note{
+	width: 94%;
+	max-height: 90px;
+	margin-bottom: 10px;
+	padding:8px;
+	font-size: 16px;
+	line-height: 24px;
+	color: #333;
+	text-indent: 2em;
+	overflow: hidden;
+	word-break:break-all;
+	display:-webkit-box;
+  -webkit-line-clamp:4;
+  -webkit-box-orient:vertical;
+	border: 3px solid rgba(129,196,131,.6);
+	border-radius: 5px;
+}
+#note-detail{
+	position: absolute;
+	top: 0;
+	left: 436px;
+	width: calc(100% - 436px);
+	height: 100%;
+	overflow:auto; 
+}
+#note-detail .note_title{
+	width: 100%;
+	height: 180px;
+	font-size: 30px;
+	line-height: 180px;
+	text-align: center;
+	color:#ddd;
+	background-color: rgba(129,196,131,.9);
+}
+#note-detail .note_content{
+	width: calc(100% - 60px);
+	height: calc(100% -180px);
+	padding-top: 20px;
+	padding-left: 30px;
+	padding-right: 30px;
+	font-size: 16px;
+	line-height: 20px;
+}
+.selectedNote{
+	background-color: #666;
+	color:#fff;
+}
+.hoverNote{
+	background-color:#666;
+	color: #fff;
+}
