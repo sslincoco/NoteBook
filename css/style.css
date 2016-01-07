@@ -6,7 +6,7 @@ ul{
 a{
 	text-decoration: none;
 }
-input{outline: none;}
+input{outline: none; border: none;}
 .btn_pointer{cursor: pointer;}
 body{
 	font-family: Arial;
@@ -22,6 +22,7 @@ body{
 	top: 0;
 	overflow: hidden;
 }
+/*sidebar*/
 .sidebar{
 	position: absolute;
 	left: 0;
@@ -70,10 +71,18 @@ body{
 	width: 160px;
 	color: #c2c2c6;
 	background-color: #181818;
-	/*background-color: #222;*/
 	border: none;
 	border-bottom: 1px dashed #ccc;
 }
+.selectedNote{
+	background-color: #666;
+	color:#fff;
+}
+.hoverNote{
+	background-color:#666;
+	color: #fff;
+}
+/*container*/
 .container{
 	position: absolute;
 	left: 200px;
@@ -130,14 +139,16 @@ body{
 	display: inline-block;
 	color: #eee;
 }
-.content{
-	overflow: auto;
+.notes{
+	width: 100%;
 	height: 100%;
 }
-.content .content-list{
+.notes .note-list{
 	width: 100%;
+	height: calc(100% - 170px);
+	overflow-y: auto;
 }
-.content-list .note{
+.note-list .note{
 	width: 94%;
 	max-height: 90px;
 	margin-bottom: 10px;
@@ -145,14 +156,22 @@ body{
 	font-size: 16px;
 	line-height: 24px;
 	color: #333;
-	text-indent: 2em;
 	overflow: hidden;
 	word-break:break-all;
 	display:-webkit-box;
   -webkit-line-clamp:4;
   -webkit-box-orient:vertical;
+  border: 2px solid rgba(129,196,131,0.2);
+  border-radius: 5px;
+}
+.note-list .note:hover{
+	background-color: rgba(129,196,131,.9);
+}
+.note-list .selected{
 	border: 3px solid rgba(129,196,131,.6);
-	border-radius: 5px;
+}
+.note-list h3{
+	font-size: 16px;
 }
 #note-detail{
 	position: absolute;
@@ -165,26 +184,77 @@ body{
 #note-detail .note_title{
 	width: 100%;
 	height: 180px;
-	font-size: 30px;
+	font-size: 24px;
 	line-height: 180px;
 	text-align: center;
-	color:#ddd;
+	color:#eee;
 	background-color: rgba(129,196,131,.9);
 }
 #note-detail .note_content{
 	width: calc(100% - 60px);
-	height: calc(100% -180px);
+	height: calc(100% -200px);
 	padding-top: 20px;
 	padding-left: 30px;
 	padding-right: 30px;
 	font-size: 16px;
 	line-height: 20px;
+	text-indent: 2em;
 }
-.selectedNote{
-	background-color: #666;
-	color:#fff;
+
+.edit_note{
+	position: absolute;
+	top: 0;
+	left: 436px;
+	width: 100%;
+	height: 100%;
+	background-color: #f8f8f8;
+	z-index: 99;
+	overflow: auto;
+	scrollbar-face-color: red;
+	-webkit-scrollbar-face-color: red;
 }
-.hoverNote{
-	background-color:#666;
+.edit_note .newNote_title{
+	display: block;
+	width: 100%;
+	height: 180px;
+	font-size: 36px;
+	text-align: center;
+	color: #b2b2b6;
+	line-height: 60px;
+}
+.edit_note .newNote_content{
+	width: calc(100%-50px);
+	height: 100%;
+	padding: 25px 30px;
+	padding-right: 30px;
+	outline: none;
+	font-size: 16px;
+	line-height: 22px;
+	color: #666;
+	border-top: 30px solid  rgba(129,196,131,.9);
+}
+.edit_note .edit_tools{
+	display: block;
+	position: absolute;
+	top: 20px;
+	right: 30px;
+	height: 25px;
+	width: auto;
+}
+.edit_tools span{
+	display: inline-block;
+	position: relative;
+	height: 24px;
+	width: 60px;
+	margin-right: 20px;
+	font-size: 16px;
+	line-height: 24px;
+	text-align: center;
 	color: #fff;
+	background-color: rgb(110,200,110);
+	border: 1px solid rgb(129,196,131);
+	border-radius: 5px;
+}
+.edit_tools span:hover{
+	background-color: rgba(100,200,100,0.8);
 }

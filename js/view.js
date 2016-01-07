@@ -23,4 +23,7 @@
 			// 	NotebooksCtrl.clickCategory_note(this);
 			// });
 
+		$("#note-detail .note_title > h3").html($(".selected > h3").html());
+		$("#note-detail .note_content").html($(".selected >p").html());
+
 })(this,this.document)
