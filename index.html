@@ -6,61 +6,90 @@
 	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
-<div class="notePage">
-	<div class="sidebar"> <!-- slidebar开始 -->
-		<div class="side-header">笔记本</div>
-		<div class="side-tools">
-			<span class="addNotebook btn_pointer"><img src="images/add.png"></span>
-			<span class="deleteNotebook btn_pointer"><img src="images/dustbin.png"></span>
-		</div>
-
-		<input class= "input_new_category" type="text" />
-		<ul id="notebooks">
-			<li class="category_note">NoteBook1</li>
-			<li class="category_note">NoteBook2</li>
-			<li class="category_note">NoteBook3</li>
-		</ul>
-		
-	</div><!-- slidebar结束 -->
-	<div class="container">
-
-		<!-- 笔记列表 -->
-		<div id="container_Info">
-			<div class="container-header">
-				<span>笔记</span><span class="addNew  btn_pointer"><a href="javascript:;"><i></i>新建笔记</a></span>
+	<div class="notePage">
+		<div class="sidebar"> <!-- slidebar开始 -->
+			<div class="side-header">笔记本</div>
+			<div class="side-tools">
+				<span class="addNotebook btn_pointer"><img src="images/add.png"></span>
+				<span class="deleteNotebook btn_pointer"><img src="images/dustbin.png"></span>
 			</div>
-			<div class="notes">
-				<ul class="note-list">
-					<li class="note" data-id="0"><h3>第一个笔记</h3><p>1.rem是CSS3新引进来的一个度量单位，大家心里肯定会觉得心灰意冷呀，担心浏览器的支持情况。其实大家不用害怕，你可能会惊讶，支持的浏览器还是蛮多的，比如：Mozilla Firefox 3.6+、Apple Safari 5+、Google Chrome、IE9+和Opera11+。只是可怜的IE6-8无法，你们就把他们当透明了吧，我向来都是如此。</p></li>
-					<li class="note" data-id="1"><h3>第二个笔记</h3><p>2.rem是CSS3新引进来的一个度量单位，大家心里肯定会觉得心灰意冷呀，担心浏览器的支持情况。其实大家不用害怕，你可能会惊讶，支持的浏览器还是蛮多的，比如：Mozilla Firefox 3.6+、Apple Safari 5+、Google Chrome、IE9+和Opera11+。只是可怜的IE6-8无法，你们就把他们当透明了吧，我向来都是如此。</p></li>
-				</ul>
+
+			<input class= "input_new_category" type="text" />
+			<ul id="notebooks">
+				<li class="category_note" data-id="0" notebook-title="NoteBook1" numberOfNote="2"></li>
+				<li class="category_note" data-id="1" notebook-title="NoteBook2" numberOfNote="1">NoteBook2</li>
+				<li class="category_note" data-id="2" notebook-title="NoteBook3" numberOfNote="0">NoteBook3</li>
+			</ul>
+			
+		</div><!-- slidebar结束 -->
+		<div class="container">
+
+			<!-- 笔记列表 -->
+			<div id="container_Info">
+				<div class="container-header">
+					<span>笔记</span><span class="addNew  btn_pointer"><a href="javascript:;"><i></i>新建笔记</a></span>
+				</div>
+				<div class="notes">
+					<ul class="note-list">
+						<li class="note" data-id="0"><h3>第一个笔记</h3><p>1.rem是CSS3新引进来的一个度量单位，大家心里肯定会觉得心灰意冷呀，担心浏览器的支持情况。其实大家不用害怕，你可能会惊讶，支持的浏览器还是蛮多的，比如：Mozilla Firefox 3.6+、Apple Safari 5+、Google Chrome、IE9+和Opera11+。只是可怜的IE6-8无法，你们就把他们当透明了吧，我向来都是如此。</p>
+						<i class="deleteNote btn_pointer" style="display:none"></i></li>
+						<li class="note" data-id="0"><h3>第2个笔记</h3><p>1.rem是CSS3新引进来的一个度量单位.</p>
+						<i class="deleteNote btn_pointer" style="display:none"></i></li>
+						<li class="note" data-id="1"><h3>第二个笔记</h3><p>2.rem是CSS3新引进来的一个度量单位，大家心里肯定会觉得心灰意冷呀，担心浏览器的支持情况。其实大家不用害怕，你可能会惊讶，支持的浏览器还是蛮多的，比如：Mozilla Firefox 3.6+、Apple Safari 5+、Google Chrome、IE9+和Opera11+。只是可怜的IE6-8无法，你们就把他们当透明了吧，我向来都是如此。</p>
+						<i class="deleteNote btn_pointer" style="display:none"></i></li>
+					</ul>
+				</div>
+				
+			</div>
+
+			<!-- 编辑新笔记 -->
+			<div class="edit_note" style="display:none" >
+			    <div class="edit_tools">
+			    	<span class="cancel btn_pointer">取消</span><span class="save btn_pointer">保存</span>
+			    </div>
+				<input type="text" class="newNote_title"  placeholder="写下笔记标题"  />
+				<div class="newNote_content" contenteditable="true">直接开始输入......</div>
 			</div>
 			
-		</div>
-
-		<!-- 编辑新笔记 -->
-		<div class="edit_note" style="display:none" >
-		    <div class="edit_tools">
-		    	<span class="cancel btn_pointer">取消</span><span class="save btn_pointer">保存</span>
-		    </div>
-			<input type="text" class="newNote_title"  placeholder="写下笔记标题"  />
-			<div class="newNote_content" contenteditable="true">直接开始输入......</div>
-		</div>
-		
-		<!-- 显示笔记的详细内容 -->
-		<div id="note-detail">
-			<div class="note_title"><h3>第一个笔记</h3></div>
-			<div class="note_content">
-				rem是CSS3新引进来的一个度量单位，大家心里肯定会觉得心灰意冷呀，担心浏览器的支持情况。其实大家不用害怕，你可能会惊讶，支持的浏览器还是蛮多的，比如：Mozilla Firefox 3.6+、Apple Safari 5+、Google Chrome、IE9+和Opera11+。只是可怜的IE6-8无法，你们就把他们当透明了吧，我向来都是如此。
+			<!-- 显示笔记的详细内容 -->
+			<div id="note-detail">
+				<div class="note_title"><h3>第一个笔记</h3></div>
+				<div class="note_content">
+					rem是CSS3新引进来的一个度量单位，大家心里肯定会觉得心灰意冷呀，担心浏览器的支持情况。其实大家不用害怕，你可能会惊讶，支持的浏览器还是蛮多的，比如：Mozilla Firefox 3.6+、Apple Safari 5+、Google Chrome、IE9+和Opera11+。只是可怜的IE6-8无法，你们就把他们当透明了吧，我向来都是如此。
+				</div>
 			</div>
 		</div>
-		
+
 	</div>
-	
-</div>
+		<!-- //遮罩层 -->
+	<div class="gray-overlay"></div>
+
+	<!-- //删除确认提示 -->
+	<div class="deleteConfirm" style="display:none;">
+		<h3 class="delInfo">确定删除吗?</h3>
+		<div class="btn">
+			<input type="button" class ="off btn_pointer" value="取消" / >
+			<input type="button" class="confirm btn_pointer" value="删除" />	
+		</div>
+	</div>
 
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/handlebars.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
 <script type="text/javascript" src="js/view.js"></script>
 </body>
+<script id="notebooks-template" type="text/x-handlebars-template">
+	<li class="category_note" data-id="{{id}}">{{notebook_title}}({{numberOfNotes}})</li>
+</script>
+<script id="notebook-template" type="text/x-handlebars-template">
+	{{#each notebooks}}
+	<li class="category_note" data-id="{{id}}">{{notebook_title}}({{numberOfNotes}})</li>
+	{{/each}}
+</script>
+<script id="note-template" type="text/x-handlebars-template">
+	
+</script>
+<!-- //handlebars的使用
+var myTemplate = Handlebars.compile($("#table-template").html());
+$('#tableList').html(myTemplate(data)); -->
 </html>

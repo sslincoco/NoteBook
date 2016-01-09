@@ -10,6 +10,7 @@
 			});
 
 			$(".category_note").on('mouseout',function(){
+				$(this).find(".deleteNote").hide();
 				if ($(this).hasClass("selectedNote")) {
 				}
 				else{
@@ -22,6 +23,12 @@
 			// $(".category_note").on('click',function(){
 			// 	NotebooksCtrl.clickCategory_note(this);
 			// });
+		$(".note").on('mouseover',function(){
+			$(this).find(".deleteNote").show();
+		});
+		$(".note").on('mouseout',function(){
+			$(this).find(".deleteNote").hide();
+		});
 
 		$("#note-detail .note_title > h3").html($(".selected > h3").html());
 		$("#note-detail .note_content").html($(".selected >p").html());
