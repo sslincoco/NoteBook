@@ -1,11 +1,13 @@
 (function(window,document){
 
+	AV.initialize("ChFcpLqSQGnOeO7WGjJx9iXq-gzGzoHsz", "feCyQEOFiQjEXlhnmnl6VR1J");
+
 	$(document).ready(function(){
 		var _this =$(this);
 		var NotebooksCtrl={};
 		NotebooksCtrl.category_number = 0;
 		NotebooksCtrl.currNote = {};
-		NotebooksCtrl.delNote = {};
+		NotebooksCtrl.delNote = null;
 
 		var $notebooks=$("#notebooks");
 		var $input_new_category = $(".input_new_category");
@@ -21,11 +23,6 @@
 				$input_new_category.blur();
 			}
 
-		});
-
-		//为notebooks绑定事件
-		$(".category_note").on('click',function(){
-			NotebooksCtrl.clickCategory_note(this);
 		});
 
 		//input_new_category失去焦点时触发事件
@@ -46,83 +43,65 @@
 			$(".gray-overlay").hide();
 			$(".deleteConfirm").hide();
 		});
+
 		//确定删除事件
 		$(".confirm").on('click',function(){
 			$(".gray-overlay").hide();
 			$(".deleteConfirm").hide();
 			NotebooksCtrl.clickdeleteNote(NotebooksCtrl.delNote);
-			
 		});
 
+		// 初始化
 		NotebooksCtrl.init = function(){
 			$(".gray-overlay").hide();
-			NotebooksCtrl.category_number = $("#notebooks .category_note").length;
-			$("#notebooks .category_note").each(function(index){
-				$(this).attr("data-id",index);
-				$(this).html($(this).attr("notebook-title")+'('+$(this).attr("numberOfNote")+')'); 
-			});
-			$("#notebooks .category_note").eq(0).addClass("selectedNote");
-			var data_id = $(".selectedNote").attr("data-id");
-			$(".note").hide();
-			$(".note-list").find('.note[data-id='+data_id+']').show();
-			$selected = $(".note-list").find('.note[data-id='+data_id+']').eq(0).addClass("selected");
-			NotebooksCtrl.currNote ={
-				title: $selected.find("h3").html(),
-				content: $selected.find("p").html()
-			};
-			NotebooksCtrl.showDetail(NotebooksCtrl.currNote);
+			notebookModel.loadAll(notebookloadAllcallback);
 		};
-
-		//在当前目录下新建笔记
-		//这两个缓冲运动可以合并
-		var timer=null;
-		var speed=0;
-		function slowMove(iTarget){
-			var state = true;
-			if ($(".edit_note").is(":hidden")) {
-				$(".edit_note").show();
-				state=false;
+		function notebookloadAllcallback(error,cloudNotebooks){
+			if (error) {
+               	console.log("error.message");
+			}else{
+				if (cloudNotebooks.length ==0 || cloudNotebooks.length===undefined) {
+					console.log("no notebooks");
+					cloudNotebooks=[];
+				}else{
+					console.log("开始渲染......");
+					notebookView.render(cloudNotebooks);
+					console.log("渲染结束......");
+				}
 			}
+		};
+			
+		//在当前目录下新建笔记时，编辑笔记区域的缓冲运动
+		var timer=null;
+		function slowMove(iTarget){
+			if (iTarget >0) {
+				$(".newNote_title").val("");
+				$(".newNote_content").html("");
+			}
+			else{
+				$(".edit_note").show();
+			}
+			var speed=0;
 			clearInterval(timer);
 			timer = setInterval(function(){
 					var dist = iTarget - $(".edit_note").position().left;
 					speed = dist>0 ? Math.ceil(dist/10):Math.floor(dist/10);
 					$(".edit_note").css('left',$(".edit_note").position().left+ speed +'px');
-					if (dist==0) {
+					if (iTarget >0 && dist==0) {
 						clearInterval(timer);
-						if (state) {
-							$(".edit_note").hide();
-						}
+						$(".edit_note").hide();
 					}
-
 				},30);
 		};
 
 		//点击新建笔记按钮
 		$(".addNew").on('click',function(){
-			$(".edit_note").show();
-			clearInterval(timer);
-			timer = setInterval(function(){
-					var dist = 0 - $(".edit_note").position().left;
-					speed = dist>0 ? Math.ceil(dist/10):Math.floor(dist/10);
-					$(".edit_note").css('left',$(".edit_note").position().left+ speed +'px');
-				},30);
+			slowMove(0);
 		});
 
 		//点击取消按钮
 		$(".cancel").on('click',function(){
-			clearInterval(timer);
-			$(".newNote_title").val("");
-			$(".newNote_content").html("");
-			timer = setInterval(function(){
-					var dist = 436- $(".edit_note").position().left;
-					speed = dist>0 ? Math.ceil(dist/10):Math.floor(dist/10);
-					$(".edit_note").css('left',$(".edit_note").position().left+ speed +'px');
-					if (dist==0) {
-						clearInterval(timer);
-						$(".edit_note").hide();
-					}
-				},30);
+			slowMove(436);
 		});
 
 		//点击保存按钮
@@ -132,36 +111,40 @@
 					title: $(".newNote_title").val() ? $(".newNote_title").val():"无标题",
 					content: $(".newNote_content").html()
 				};
-				var data_id = $(".selectedNote").attr("data-id");
-				var $selectedCategory = $('.category_note[data-id='+data_id+']');
+				var categoryId = $(".selectedNote").attr("data-id");
+
+
+				var note={};
+				note.categoryId = categoryId;
+				note.title = $(".newNote_title").val() ? $(".newNote_title").val():"无标题";
+				note.content = $(".newNote_content").html();
+				note.alive =true;
+				noteModel.add(categoryId,note);
+				////////////////////////////////
+				var $selectedCategory = $('.category_note[data-id='+categoryId+']');
 				var numberOfNote = parseInt($selectedCategory.attr("numberOfNote"))+1;
 				var title = $selectedCategory.attr("notebook-title");
 				$selectedCategory.attr("numberOfNote",numberOfNote);
 				$selectedCategory.html(title+'('+numberOfNote+')'); 
+
+				/////////////////////////
 				$(".note-list>li").removeClass("selected");
-				var $oli = $('<li class="note selected"><h3>'+ NotebooksCtrl.currNote.title+'</h3><p>'+NotebooksCtrl.currNote.content+'</p><i class="deleteNote btn_pointer" style="display:none;"></i></li>');
-				$oli.attr("data-id",data_id);
+				var $oli = $('<li class="note selected"><h3>'+ note.title+'</h3><p>'+note.content+'</p><i class="deleteNote btn_pointer" style="display:none;"></i></li>');
+				$oli.attr("categoryId",categoryId);
 				$(".note-list").prepend($oli);
+				notebookView.renderDetail(NotebooksCtrl.currNote);
+				notebookModel.update(categoryId,1);
+
+				//绑定事件
 				$oli.on('click',function(){
 					NotebooksCtrl.clickNote($(this));
 				});
 				$oli.on('mouseover',function(){
 					$(this).find(".deleteNote").show();
-					if ($(this).hasClass("selectedNote")) {
-					}
-					else{
-						$(this).addClass("hoverNote");
-
-					}
 				});
 
 				$oli.on('mouseout',function(){
 					$(this).find(".deleteNote").hide();
-					if ($(this).hasClass("selectedNote")) {
-					}
-					else{
-						$(this).removeClass("hoverNote");
-					}	
 				});
 
 				$oli.find(".deleteNote").on('click',function(){
@@ -169,73 +152,52 @@
 					$(".gray-overlay").show();
 					$(".deleteConfirm .delInfo").html("确定删除"+NotebooksCtrl.delNote.find("h3").html()+"吗？");
 					$(".deleteConfirm").show();
-					// NotebooksCtrl.clickdeleteNote($(this).parent());
 				});
-				NotebooksCtrl.showDetail(NotebooksCtrl.currNote);
+
 			}
 			$(".newNote_title").val("");
 			$(".newNote_content").html("");
 			$(".edit_note").hide();
 		});
 
-		//点击笔记时绑定事件
-		$(".note").on('click',function(){
-			NotebooksCtrl.clickNote(this);
-		});
-
-		//显示选定笔记的具体内容
-        NotebooksCtrl.showDetail = function(notedata){
-        	$(".note_title>h3").html(notedata.title);
-			$(".note_content").html(notedata.content);
-        };
-
         //点击某个笔记时触发事件
-		NotebooksCtrl.clickNote = function(note){
+		NotebooksCtrl.clickNote = function($note){
 			$(".note").removeClass("selected");
-			$(note).addClass("selected");
+			$note.addClass("selected");
 			NotebooksCtrl.currNote ={
-				title: $(note).find("h3").eq(0).html(),
-				content: $(note).find("p").eq(0).html()
+				title: $note.find("h3").eq(0).html(),
+				content: $note.find("p").eq(0).html()
 			};
-			NotebooksCtrl.showDetail(NotebooksCtrl.currNote);
+			notebookView.renderDetail(NotebooksCtrl.currNote);
 		};
 
         //添加新的笔记本
 		NotebooksCtrl.addNotebook= function(title){
 			var $oli = $('<li class="category_note">'+title+'(0)'+'</li>');
-			$oli.attr({"numberOfNote":"0","notebook-title":title});
+			$oli.attr({"notebook-title":title,"numberOfNote":"0"});
 			$notebooks.prepend($oli);
 			$notebooks.find(".category_note").each(function(){
 				$(this).removeClass("selectedNote");
 			});
-			$oli.attr("data-id",NotebooksCtrl.category_number).addClass("selectedNote").on('click',function(){
-				NotebooksCtrl.clickCategory_note(this);
-			});
 			NotebooksCtrl.category_number++;
-			$(".note").hide();
+			$oli.addClass("selectedNote").on('click',function(){
+				NotebooksCtrl.clickCategory_note($(this));
+			});
+			$(".note-list").html("");
 			NotebooksCtrl.currNote={
 				title:"",
 				content:""
 			};
-			NotebooksCtrl.showDetail(NotebooksCtrl.currNote);
+			notebookView.renderDetail(NotebooksCtrl.currNote);
 
-			$oli.on('mouseover',function(){
-				$(this).find(".deleteNote").show();
-				if ($(this).hasClass("selectedNote")) {
-				}
-				else{
-					$(this).addClass("hoverNote");
-				}
-			});
+			//在leancloud上保存笔记本数据
+			var newNotebook ={
+				title:title,
+				numberOfNote:0,
+				alive:true
+			};
+			notebookModel.add(newNotebook);
 
-			$oli.on('mouseout',function(){
-				$(this).find(".deleteNote").hide();
-				if ($(this).hasClass("selectedNote")) {
-				}
-				else{
-					$(this).removeClass("hoverNote");
-				}	
-			});
 		};
 
 		//点击删除笔记事件
@@ -245,14 +207,11 @@
 				console.log("删除笔记："+NotebooksCtrl.delNote.find("h3").html());
 				$(".deleteConfirm .delInfo").html("确定删除"+NotebooksCtrl.delNote.find("h3").html()+"吗？");
 				$(".deleteConfirm").show();
-			// NotebooksCtrl.clickdeleteNote($(this).parent());
 		});
 
-
-
 		//点击删除笔记本事件
-		// $(".deleteNotebook").on('click', deleteNotebook);
 		$(".deleteNotebook").on('click', function(){
+			NotebooksCtrl.delNote=null;
 			$(".gray-overlay").show();
 			console.log("删除笔记本："+$(".selectedNote").attr("notebook-title"));
 			$(".deleteConfirm .delInfo").html("确定删除"+$(".selectedNote").attr("notebook-title")+"吗？");
@@ -261,77 +220,67 @@
 
 		//删除笔记本事件
 		function deleteNotebook(){
-			var data_id = $(".selectedNote").attr("data-id");
-			console.log(data_id);
-			$('.category_note[data-id='+data_id+']').remove();
-			$(".category_note").eq(0).addClass("selectedNote");
+			var id = $(".selectedNote").attr("data-id");
+			$('.category_note[data-id='+id+']').remove();
+			notebookModel.remove(id);
 
-			//渲染(该部分可重用，简化程序)
-			var data_id = $(".selectedNote").attr("data-id");
-			$(".note").removeClass("selected").hide();
-			$(".note-list").find('.note[data-id='+data_id+']').show();
-			if ($(".note-list").find('.note[data-id='+data_id+']').length>0) {
-				$selected = $(".note-list").find('.note[data-id='+data_id+']').eq(0);
-				$selected.addClass("selected");
+			if ($(".category_note").length ==0) {
+				$(".note-list").html("");
 				NotebooksCtrl.currNote ={
-					title: $selected.find("h3").html(),
-					content: $selected.find("p").html()
+					title: "",
+					content: ""
 				};
 			}else{
-					NotebooksCtrl.currNote ={
-						title: "",
-						content: ""
-					};
+				$(".category_note").eq(0).addClass("selectedNote");
+				$(".selectedNote").click();
 			}
-			NotebooksCtrl.showDetail(NotebooksCtrl.currNote);
+			notebookView.renderDetail(NotebooksCtrl.currNote);
 		};
 
-
 		//点击某个笔记本触发事件
-		NotebooksCtrl.clickCategory_note = function(element){
+		NotebooksCtrl.clickCategory_note = function($element){
 			$notebooks.find(".category_note").each(function(index,element){
 				$(this).removeClass("selectedNote");
-				$(this).removeClass("hoverNote");
 			}); 
-			$(element).addClass("selectedNote");
-
-			//渲染
+			$element.addClass("selectedNote");
 			var data_id = $(".selectedNote").attr("data-id");
-			$(".note").removeClass("selected").hide();
-			$(".note-list").find('.note[data-id='+data_id+']').show();
-			if ($(".note-list").find('.note[data-id='+data_id+']').length>0) {
-				$selected = $(".note-list").find('.note[data-id='+data_id+']').eq(0);
-				$selected.addClass("selected");
-				NotebooksCtrl.currNote ={
-					title: $selected.find("h3").html(),
-					content: $selected.find("p").html()
-				};
+			var numberOfNote = parseInt($(".selectedNote").attr("numberOfNote"));
+			if (numberOfNote >0) {
+				noteModel.load(data_id,loadNotesCallback);
 			}else{
-					NotebooksCtrl.currNote ={
+				$(".note-list").html("");
+				NotebooksCtrl.currNote ={
 						title: "",
 						content: ""
 					};
+				notebookView.renderDetail(NotebooksCtrl.currNote);
 			}
-			NotebooksCtrl.showDetail(NotebooksCtrl.currNote);
-
+		};
+		function loadNotesCallback(error,notes){
+			if (error) {
+				console.log(error);
+			}else{
+				if (notes.length ==0 || notes.length===undefined) {
+					notes=[];
+				}
+				notebookView.renderItem(notes);
+			}
 		};
 
 		//删除某个笔记
 		NotebooksCtrl.clickdeleteNote = function($deleteNote){
 			if ($deleteNote) { 
-				deleteNotebook();
-			}
-			else{
-					var data_id =$deleteNote.attr("data-id");
-					var $delCategory = $('.category_note[data-id='+data_id+']');
+
+					var categoryId =$deleteNote.attr("categoryId");
+					var id = $deleteNote.attr("data-id");
+					var $delCategory = $('.category_note[data-id='+categoryId+']');
 					var numberOfNote = parseInt($delCategory.attr("numberOfNote"))-1;
 					var title = $delCategory.attr("notebook-title");
 					$delCategory.attr("numberOfNote",numberOfNote);
 					$delCategory.html(title+'('+numberOfNote+')');
 					$deleteNote.remove();
-					var $note = $('.note[data-id='+data_id+']');
+					var $note = $('.note[categoryId='+categoryId+']');
 					if ($note.length ==0) {
-						console.log("0");
 							NotebooksCtrl.currNote ={
 								title: "",
 								content: ""
@@ -347,11 +296,19 @@
 									};
 							}
 					}
-					NotebooksCtrl.showDetail(NotebooksCtrl.currNote);
+					notebookView.renderDetail(NotebooksCtrl.currNote);
+					//在leancloud上删除数据
+					var classname = "C"+categoryId;
+					noteModel.remove(classname,id);
+					notebookModel.update(categoryId,-1);
+			}
+			else{
+				deleteNotebook();
 			}
 		};
 
 		//////////初始化
+		window.NotebooksCtrl = NotebooksCtrl;
 		NotebooksCtrl.init();
 
 
