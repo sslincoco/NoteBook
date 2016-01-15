@@ -176,9 +176,10 @@
 			var $oli = $('<li class="category_note">'+title+'(0)'+'</li>');
 			$oli.attr({"notebook-title":title,"numberOfNote":"0"});
 			$notebooks.prepend($oli);
-			$notebooks.find(".category_note").each(function(){
-				$(this).removeClass("selectedNote");
-			});
+			$(".category_note").removeClass("selectedNote");
+			// $notebooks.find(".category_note").each(function(){
+			// 	$(this).removeClass("selectedNote");
+			// });
 			NotebooksCtrl.category_number++;
 			$oli.addClass("selectedNote").on('click',function(){
 				NotebooksCtrl.clickCategory_note($(this));

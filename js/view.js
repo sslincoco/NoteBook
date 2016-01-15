@@ -9,7 +9,7 @@
 				var $oli = $('<li class="category_note"></li>');
 				$oli.attr({"data-id":item.id,"notebook-title":item.title,"numberOfNote":item.numberOfNote});
 				$oli.html(item.title+'('+item.numberOfNote+')');
-				$("#notebooks").append($oli);
+				$("#notebooks").prepend($oli);
 			};
 			$("#notebooks >li").eq(0).addClass("selectedNote");
 			$(".category_note").on('click',function(){
