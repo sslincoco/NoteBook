@@ -9,6 +9,7 @@
     window.noteModel = noteModel;
     var notebooks=[];
     var notes=[];
+    // window.notes=notes;
 
     notebookModel.loadAll = function (callback) {
         var query = new AV.Query(Notebook);

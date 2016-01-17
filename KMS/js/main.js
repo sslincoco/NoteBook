@@ -5,6 +5,7 @@
 	$(document).ready(function(){
 		var _this =$(this);
 		var NotebooksCtrl={};
+		NotebooksCtrl.category_number = 0;
 		NotebooksCtrl.currNote = {};
 		NotebooksCtrl.delNote = null;
 
@@ -106,29 +107,40 @@
 		//点击保存按钮
 		$(".save").on('click',function(){
 			if ($(".newNote_title").val() || $(".newNote_content").text()) {
-				NotebooksCtrl.currNote = {
-					title: $(".newNote_title").val() || "无标题",
-					content: $(".newNote_content").html()
-				};
-				var categoryId = $(".selectedNote").attr("data-id");
 
+				var categoryId = $(".selectedNote").attr("data-id");
 
 				var note={};
 				note.categoryId = categoryId;
-				note.title = $(".newNote_title").val() || "无标题",
-				note.content = $(".newNote_content").html();
+				note.title = $(".newNote_title").val() ? $(".newNote_title").val():"无标题";
+				note.content = $(".newNote_content").text();
+
+				///将markdown语句转换为html格式
+				note.title = markdown.toHTML(NotebooksCtrl.htmlProcess(note.title));
+      			note.content = markdown.toHTML(NotebooksCtrl.htmlProcess(note.content));
 				note.alive =true;
+
+				/////////////////////////
+				console.log(note);
 				noteModel.add(categoryId,note);
-				////////////////////////////////
+
+				NotebooksCtrl.currNote = {
+					title: note.title,
+					content: note.content
+				};
+
 				var $selectedCategory = $('.category_note[data-id='+categoryId+']');
 				var numberOfNote = parseInt($selectedCategory.attr("numberOfNote"))+1;
 				var title = $selectedCategory.attr("notebook-title");
 				$selectedCategory.attr("numberOfNote",numberOfNote);
 				$selectedCategory.html(title+'('+numberOfNote+')'); 
 
-				/////////////////////////
+				/////////////////////////					
+		     
 				$(".note-list>li").removeClass("selected");
-				var $oli = $('<li class="note selected"><h3>'+ note.title+'</h3><p>'+note.content+'</p><i class="deleteNote btn_pointer" style="display:none;"></i></li>');
+				var $oli = $('<li class="note selected"><h3 class="title"></h3><p class="content"></p><i class="deleteNote btn_pointer" style="display:none;"></i></li>');
+				$oli.find(".title").html(note.title);
+				$oli.find(".content").html(note.content);
 				$oli.attr("categoryId",categoryId);
 				$(".note-list").prepend($oli);
 				notebookView.renderDetail(NotebooksCtrl.currNote);
@@ -149,7 +161,7 @@
 				$oli.find(".deleteNote").on('click',function(){
 					NotebooksCtrl.delNote = $(this).parent();
 					$(".gray-overlay").show();
-					$(".deleteConfirm .delInfo").html("确定删除"+NotebooksCtrl.delNote.find("h3").html()+"吗？");
+					$(".deleteConfirm .delInfo").html("确定删除吗？");
 					$(".deleteConfirm").show();
 				});
 
@@ -163,19 +175,31 @@
 		NotebooksCtrl.clickNote = function($note){
 			$(".note").removeClass("selected");
 			$note.addClass("selected");
+
 			NotebooksCtrl.currNote ={
-				title: $note.find("h3").eq(0).html(),
-				content: $note.find("p").eq(0).html()
+				title: $note.find(".title").html(),
+				content: $note.find(".content").html()
 			};
+
 			notebookView.renderDetail(NotebooksCtrl.currNote);
 		};
 
+		//处理输入信息的html语句
+		NotebooksCtrl.htmlProcess = function(html){
+			// var html = html.replace(/&lt;/g,"<").replace(/&gt;/g,">");
+	        var html = html.replace(/<html>/g,'').replace(/<\/html>/g,'').replace(/<\/body>/g,'').replace(/<body>/g,'').replace(/<\/div>/g,'').replace(/<div>/g,'\n').replace(/<br>/g, '');
+	        	html = html.replace(/<p>/g,'').replace(/<\/p>/g,'');
+	        return html;
+	    }
         //添加新的笔记本
 		NotebooksCtrl.addNotebook= function(title){
 			var $oli = $('<li class="category_note">'+title+'(0)'+'</li>');
 			$oli.attr({"notebook-title":title,"numberOfNote":"0"});
 			$notebooks.prepend($oli);
-			$(".category_note").removeClass("selectedNote");
+			$notebooks.find(".category_note").each(function(){
+				$(this).removeClass("selectedNote");
+			});
+			NotebooksCtrl.category_number++;
 			$oli.addClass("selectedNote").on('click',function(){
 				NotebooksCtrl.clickCategory_note($(this));
 			});
@@ -201,7 +225,7 @@
 				NotebooksCtrl.delNote = $(this).parent();
 				$(".gray-overlay").show();
 				console.log("删除笔记："+NotebooksCtrl.delNote.find("h3").html());
-				$(".deleteConfirm .delInfo").html("确定删除"+NotebooksCtrl.delNote.find("h3").html()+"吗？");
+				$(".deleteConfirm .delInfo").html("确定删除"+NotebooksCtrl.delNote.find(".title").html()+"吗？");
 				$(".deleteConfirm").show();
 		});
 
@@ -287,8 +311,8 @@
 							else{
 									$note.first().addClass("selected");
 									NotebooksCtrl.currNote ={
-										title: $note.first().find("h3").html(),
-										content: $note.first().find("p").html()
+										title: $note.first().find(".title").html(),
+										content: $note.first().find(".content").html()
 									};
 							}
 					}
