@@ -4,14 +4,15 @@
 <meta charset="utf-8">
 	<title>笔记本</title>
 	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.2.0/css/font-awesome.css">
 </head>
 <body>
 	<div class="notePage">
 		<div class="sidebar"> <!-- slidebar开始 -->
 			<div class="side-header">笔记本</div>
 			<div class="side-tools">
-				<span class="addNotebook btn_pointer"><img src="images/add.png"></span>
-				<span class="deleteNotebook btn_pointer"><img src="images/dustbin.png"></span>
+				<i class="fa fa-trash icon-trash deleteNotebook btn_pointer"></i>
+				<i class="fa fa-plus icon-plus addNotebook btn_pointer"></i>
 			</div>
 
 			<input class= "input_new_category" type="text" />
@@ -24,7 +25,7 @@
 			<!-- 笔记列表 -->
 			<div id="container_Info">
 				<div class="container-header">
-					<span>笔记</span><span class="addNew  btn_pointer"><a href="javascript:;"><i></i>新建笔记</a></span>
+					<span>笔记</span><span class="addNew  btn_pointer"><a href="javascript:;"><i class="fa fa-edit"></i>新建笔记</a></span>
 				</div>
 				<div class="notes">
 					<ul class="note-list">
@@ -69,18 +70,32 @@
 <script type="text/javascript" src="js/view.js"></script>
 <script type="text/javascript" src="js/model.js"></script>
 </body>
-<script id="notebooks-template" type="text/x-handlebars-template">
-	<li class="category_note" data-id="{{id}}">{{notebook_title}}({{numberOfNotes}})</li>
-</script>
-<script id="notebook-template" type="text/x-handlebars-template">
+
+<!-- 使用模板引擎handlebars -->
+<!-- 所有笔记本 -->
+<script id="notebook-template" type="text/x-handlers-template">
 	{{#each notebooks}}
-	<li class="category_note" data-id="{{id}}">{{notebook_title}}({{numberOfNotes}})</li>
+		<li class="category_note" data-id="{{id}}" notebook-title="{{title}}" numberOfNote="{{numberOfNote}}">
+			{{title}}({{numberOfNote}})
+		</li>
 	{{/each}}
 </script>
+
+<!-- 选中笔记本包含的全部笔记 -->
 <script id="note-template" type="text/x-handlebars-template">
-	
+	{{#each notes}}
+		<li class="note" data-id="{{id}}" categoryId="{{categoryId}}">
+			<h3>{{title}}</h3>
+			<p>{{content}}</p>
+			<i class="fa fa-trash deleteNote btn_pointer" style="display:none;"></i>
+		</li>
+	{{/each}}
 </script>
-<!-- //handlebars的使用
-var myTemplate = Handlebars.compile($("#table-template").html());
-$('#tableList').html(myTemplate(data)); -->
+
+<!-- 选中的笔记的详细内容 -->
+<script id="detail-template" type="text/x-handlebars-template">
+	<div class="note_title"><h3>{{title}}</h3></div>
+	<div class="note_content">{{content}}</div>
+</script>
+
 </html>

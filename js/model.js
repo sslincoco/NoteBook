@@ -13,18 +13,20 @@
     notebookModel.loadAll = function (callback) {
         var query = new AV.Query(Notebook);
         console.log("开始从leancloud上load数据......");
+
+        // 按照降序排列
+        query.equalTo('alive', true);
+        query.addDescending('createdAt');
+        
         query.find({
             success: function(notebookCollection){
                 NotebooksCtrl.category_number = notebookCollection.length;
-
                 for(var i = 0; i < notebookCollection.length; i++) {
-                    if (notebookCollection[i].get('alive')) {
-                        var notebook={};
-                        notebook.title = notebookCollection[i].get('title');
-                        notebook.numberOfNote = notebookCollection[i].get('numberOfNote');
-                        notebook.id = notebookCollection[i].id;
-                        notebooks.unshift(notebook);
-                    } 
+                    var notebook={};
+                    notebook.title = notebookCollection[i].get('title');
+                    notebook.numberOfNote = notebookCollection[i].get('numberOfNote');
+                    notebook.id = notebookCollection[i].id;
+                    notebooks.push(notebook);
                 }
                 console.log("笔记数目为"+notebooks.length);
                 callback(false,notebooks);
@@ -37,17 +39,16 @@
     };
 
     //在leancloud上增加笔记本信息
-    notebookModel.add =function(newNotebook){
+    notebookModel.add =function(newNotebook, callback){
             var notebookObj = new Notebook();
             notebookObj.save(newNotebook,{
                 success:function(notebookObj){
-                    console.log("新建笔记本id为: "+notebookObj.id);
-                    console.log("新建笔记本数据保存成功.......");
-                    $(".category_note").eq(0).attr("data-id",notebookObj.id)
+                    console.log("新建笔记本id为: "+ notebookObj.id);
+                    callback(null, notebookObj.id);
                 },
                 error:function(error){
-                    console.log(error.message);
-                    console.log("新建笔记本失败.......");
+                    console.log(error);
+                    callback(err, newNotebook);
                 }
             });
 
@@ -85,22 +86,24 @@
 
     };
 
-    //load某笔记本上的笔记
+    //load选中笔记本上的笔记
     noteModel.load = function(classname,callback){
         classname = 'C'+ classname; 
         var query = new AV.Query(classname);
+
+         // 按照降序排列
+        query.equalTo('alive', true);
+        query.addDescending('createdAt');
         query.find({
             success: function(noteCollection){
                   notes=[];
                 for(var i = 0; i < noteCollection.length; i++) {
-                    if (noteCollection[i].get('alive')) {
-                        var note={};
-                        note.title = noteCollection[i].get('title');
-                        note.content = noteCollection[i].get('content');
-                        note.categoryId = noteCollection[i].get('categoryId');
-                        note.id = noteCollection[i].id;
-                        notes.unshift(note);
-                    } 
+                    var note={};
+                    note.title = noteCollection[i].get('title');
+                    note.content = noteCollection[i].get('content');
+                    note.categoryId = noteCollection[i].get('categoryId');
+                    note.id = noteCollection[i].id;
+                    notes.push(note);
                 }
                 callback(false,notes);
             },
@@ -111,7 +114,7 @@
         });
     
     };
-    noteModel.add = function(classname,addnote){
+    noteModel.add = function(classname,addnote, callback){
         var notebook_id = classname;
         classname = "C"+classname;
         var Note = AV.Object.extend(classname);
@@ -119,11 +122,11 @@
         noteObj.save(addnote,{
             success:function(noteObj){
                 console.log("新建笔记保存成功.......");
-                $(".note").eq(0).attr("data-id",noteObj.id);
+                callback(null, noteObj.id);
+                // $(".note").eq(0).attr("data-id",noteObj.id);
             },
             error:function(error){
-                console.log(error.message);
-                console.log("保存失败......");
+                callback(err, addnote);
             }
         });
         ///////////////
