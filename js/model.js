@@ -13,20 +13,18 @@
     notebookModel.loadAll = function (callback) {
         var query = new AV.Query(Notebook);
         console.log("开始从leancloud上load数据......");
-
-        // 按照降序排列
-        query.equalTo('alive', true);
-        query.addDescending('createdAt');
-        
         query.find({
             success: function(notebookCollection){
                 NotebooksCtrl.category_number = notebookCollection.length;
+
                 for(var i = 0; i < notebookCollection.length; i++) {
-                    var notebook={};
-                    notebook.title = notebookCollection[i].get('title');
-                    notebook.numberOfNote = notebookCollection[i].get('numberOfNote');
-                    notebook.id = notebookCollection[i].id;
-                    notebooks.push(notebook);
+                    if (notebookCollection[i].get('alive')) {
+                        var notebook={};
+                        notebook.title = notebookCollection[i].get('title');
+                        notebook.numberOfNote = notebookCollection[i].get('numberOfNote');
+                        notebook.id = notebookCollection[i].id;
+                        notebooks.unshift(notebook);
+                    } 
                 }
                 console.log("笔记数目为"+notebooks.length);
                 callback(false,notebooks);
@@ -39,71 +37,67 @@
     };
 
     //在leancloud上增加笔记本信息
-    notebookModel.add =function(newNotebook, callback){
+    notebookModel.add =function(newNotebook){
             var notebookObj = new Notebook();
-            notebookObj.save(newNotebook,{
-                success:function(notebookObj){
-                    console.log("新建笔记本id为: "+ notebookObj.id);
-                    callback(null, notebookObj.id);
+            notebookObj.save(newNotebook).then(function(notebookObj){
+                    console.log("新建笔记本id为: "+notebookObj.id);
+                    console.log("新建笔记本数据保存成功.......");
+                    $(".category_note").eq(0).attr("data-id",notebookObj.id)
                 },
-                error:function(error){
-                    console.log(error);
-                    callback(err, newNotebook);
+                function(error){
+                    console.log(error.message);
+                    console.log("新建笔记本失败.......");
                 }
-            });
+            );
 
     };
 
     //在leancloud上删除笔记本信息
     notebookModel.remove = function(id){
         var query = new AV.Query(Notebook);
-        query.get(id,{
-            success:function(delNotebook){
+        query.get(id).then(function(delNotebook){
                 console.log("删除笔记本id为: "+delNotebook.id);
                 delNotebook.set('alive',false);
                 delNotebook.save();
             },
-            error:function(error){
+            function(error){
                 console.log("删除笔记本failed......");
             }
-        });
+        );
 
     };
-    //添加、删除笔记时所属的笔记本的numberOfNote属性也要修改
+    //添加、删除笔记时所属的笔记本的numberOfNote属性也要修改 num为1：添加; num=-1:删除;
     notebookModel.update = function(id,num){
         var query = new AV.Query(Notebook);
-        query.get(id,{
-            success:function(modNotebook){
+        query.get(id).then(function(modNotebook){
                 var number = modNotebook.get('numberOfNote');
                 number = number +num;
                 modNotebook.set('numberOfNote',number);
                 modNotebook.save();
             },
-            error:function(error){
+            function(error){
                 console.log("更新笔记本numberOfNote属性failed......");
             }
-        });
+        );
 
     };
 
-    //load选中笔记本上的笔记
+    //load某笔记本上的笔记
     noteModel.load = function(classname,callback){
         classname = 'C'+ classname; 
         var query = new AV.Query(classname);
-
-         // 按照降序排列
-        query.equalTo('alive', true);
-        query.addDescending('createdAt');
         query.find({
             success: function(noteCollection){
                   notes=[];
                 for(var i = 0; i < noteCollection.length; i++) {
-                    var note={};
-                    note.title = noteCollection[i].get('title');
-                    note.content = noteCollection[i].get('content');
-                    note.categoryId = noteCollection[i].get('categoryId');
-                    note.id = noteCollection[i].id;
-                    notes.push(note);
+                    if (noteCollection[i].get('alive')) {
+                        var note={};
+                        note.title = noteCollection[i].get('title');
+                        note.content = noteCollection[i].get('content');
+                        note.categoryId = noteCollection[i].get('categoryId');
+                        note.id = noteCollection[i].id;
+                        notes.unshift(note);
+                    } 
                 }
                 callback(false,notes);
             },
@@ -114,7 +108,7 @@
         });
     
     };
-    noteModel.add = function(classname,addnote, callback){
+    noteModel.add = function(classname,addnote){
         var notebook_id = classname;
         classname = "C"+classname;
         var Note = AV.Object.extend(classname);
@@ -122,11 +116,11 @@
         noteObj.save(addnote,{
             success:function(noteObj){
                 console.log("新建笔记保存成功.......");
-                callback(null, noteObj.id);
-                // $(".note").eq(0).attr("data-id",noteObj.id);
+                $(".note").eq(0).attr("data-id",noteObj.id);
             },
             error:function(error){
-                callback(err, addnote);
+                console.log(error.message);
+                console.log("保存失败......");
             }
         });
         ///////////////
@@ -159,14 +153,6 @@
 
     };
     ///////////
-    //为notebooks绑定事件
-    $(".category_note").on('click',function(){
-         NotebooksCtrl.clickCategory_note($(this));
-     });
-    //点击笔记时绑定事件
-    $(".note").on('click',function(){
-        NotebooksCtrl.clickNote($(this));
-    });
         
 
 
